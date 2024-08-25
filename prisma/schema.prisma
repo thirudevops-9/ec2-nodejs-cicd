@@ -1,0 +1,452 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+model Users {
+  id                 String            @id @unique
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  fullName           String            @db.VarChar(280)
+  phoneNumber        String?           @unique @db.VarChar(12)
+  emailId            String?           @unique
+  password           String
+  consent            Boolean           @default(false)
+  dob                DateTime          @db.Date
+  address            String?           @db.VarChar(2048)
+  pincode            String            @db.VarChar(10)
+  emergencyContact   String?           @db.VarChar(12)
+  profileImage       String?
+  QRCodeURL          String?
+  isSync             Boolean           @default(true)
+  isBlocked          Boolean           @default(false)
+  refreshToken       String?           @default("")
+  subscription       Boolean           @default(false)
+  country            String
+  createdBy          String
+  currentSessionId   String?           @unique
+  isMigrated         Boolean           @default(false)
+  verifiedContactId  verifiedContactId
+  gender             Gender
+  wrongLoginAttempts Int               @default(0)
+  blockedAt          DateTime?
+  deviceToken        String?           
+  activeUsers        ActiveUsers?
+  appointment        Appointment[]
+  blockReasons       BlockReasons[]
+  dependant          Dependant[]
+  documents          Documents[]
+  healthRecord       HealthRecord?
+  insurance          Insurance[]
+  medicine           Medicine[]
+  notes              Notes[]
+  notifications      Notifications[]
+  userMessage        UserMessage[]
+  setting            UsersSetting?
+  VitalsUserData     VitalsUserData[]
+}
+
+model UsersSetting {
+  appLock      Boolean @default(false)
+  language     String  @default("english")
+  notification Boolean @default(false)
+  forUserid    String? @unique
+  id           Int     @id @default(autoincrement())
+  user         Users?  @relation(fields: [forUserid], references: [id], onDelete: Cascade)
+}
+
+model ActiveUsers {
+  id        String   @unique
+  timeStamp DateTime @updatedAt
+  user      Users    @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model Notifications {
+  id         Int     @id @default(autoincrement())
+  userId     String
+  content    Json
+  readStatus Boolean @default(false)
+  changeAccessOf String?
+  AccessText    String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  user       Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerifiedUsers {
+  id             Int      @id @default(autoincrement())
+  userId         String   @unique
+  fullName       String   @db.VarChar(280)
+  phoneNumber    String?  @unique @db.VarChar(12)
+  emailId        String?  @unique
+  hashedPassword String
+  hashedOTP      String
+  isVerified     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+  country        String
+}
+
+model OtpStore {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  phoneNumber String?
+  hashedOTP   String
+  emailId     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  createdBy   String   @default("self")
+
+  @@unique([userId, createdBy])
+}
+
+model HealthRecord {
+  id                    Int        @id @default(autoincrement())
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  bloodGroup            String
+  presentDiseases       String[]   @default([])
+  allergies             String[]   @default([])
+  doctorFullName        String?    @db.VarChar(255)
+  docAddress            String?    @db.VarChar(2048)
+  docPhoneNumber        String?    @db.VarChar(12)
+  additionalInformation String?    @db.VarChar(2048)
+  forDependantId        String?    @unique
+  forUserId             String?    @unique
+  dependant             Dependant? @relation(fields: [forDependantId], references: [id])
+  user                  Users?     @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+}
+
+model Dependant {
+  id               String           @id @unique
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  fullName         String           @db.VarChar(280)
+  phoneNumber      String?          @db.VarChar(12)
+  dob              DateTime         @db.Date
+  address          String?          @db.VarChar(2048)
+  pincode          String           @db.VarChar(10)
+  emergencyContact String?          @db.VarChar(12)
+  profileImage     String?
+  QRCodeURL        String?
+  isLoggedIn       Boolean          @default(false)
+  userId           String
+  emailId          String?
+  gender           Gender
+  isBlocked        Boolean          @default(false)
+  appointment      Appointment[]
+  user             Users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document         Documents[]
+  healthRecord     HealthRecord?
+  insurance        Insurance[]
+  medicine         Medicine[]
+  notes            Notes[]
+  VitalsUserData   VitalsUserData[]
+}
+
+model Appointment {
+  id             Int        @id @default(autoincrement())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  doctorName     String     @db.VarChar(280)
+  description    String     @db.VarChar(2048)
+  apptDate       DateTime   @db.Date
+  apptTime       DateTime   @db.Time(6)
+  createdBy      String     @default("self")
+  forDependantId String?
+  forUserId      String?
+  dependant      Dependant? @relation(fields: [forDependantId], references: [id])
+  user           Users?     @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+}
+
+model Notes {
+  id             Int        @id @default(autoincrement())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  title          String
+  description    String
+  color          String
+  createdBy      String
+  forDependantId String?
+  forUserId      String?
+  dependant      Dependant? @relation(fields: [forDependantId], references: [id])
+  user           Users?     @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+}
+
+model Familylinks {
+  id                  Int        @id @default(autoincrement())
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  linkFrom            String
+  linkTo              String
+  relation            String
+  linkType            LinkType
+  sensitiveDataAccess Boolean    @default(false)
+  synced              Boolean    @default(true)
+  accessType          AccessType @default(view)
+}
+
+model SyncChanges {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  changedBy    String
+  userChanged  String
+  changeType   Changes
+  recordId     Int
+  table        String
+  familyMember String
+  synced       Boolean  @default(false)
+}
+
+model Documents {
+  id                 Int        @id @default(autoincrement())
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  documentImage      String
+  documentName       String     @db.VarChar(280)
+  documentCategory   String     @db.VarChar(280)
+  documentConsultant String?    @db.VarChar(280)
+  documentLabName    String?
+  notes              String?    @db.VarChar(2048)
+  isSensitive        Boolean    @default(false)
+  forDependantId     String?
+  forUserId          String?
+  uploadedBy         String
+  dependant          Dependant? @relation(fields: [forDependantId], references: [id])
+  Users              Users?     @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+}
+
+model Insurance {
+  id             Int        @id @default(autoincrement())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  policyNum      String
+  policyName     String
+  policyType     String?
+  policyImg      String?
+  insuranceProv  String?
+  renewalAt      DateTime
+  ifCoPay        Float?     @default(100.00)
+  createdBy      String
+  forDependantId String?
+  forUserId      String?
+  dependant      Dependant? @relation(fields: [forDependantId], references: [id])
+  Users          Users?     @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+}
+
+model Medicine {
+  id                   Int        @id @default(autoincrement())
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  medName              String     @db.VarChar(280)
+  medUnit              String     @default("tablet")
+  medInventory         Int?
+  medDoctor            String?
+  medIntakeTime        String
+  medIntakePerDose     Int
+  medIntakeFrequency   String
+  medReminderFrequency String?
+  medDosage            Int?       @default(1)
+  MedDosageSchedule    DateTime[]
+  startAt              DateTime   @default(now())
+  isActive             Boolean    @default(true)
+  isRefill             Boolean    @default(false)
+  createdBy            String
+  forDependantId       String?
+  forUserId            String?
+  medImage             String?
+  endAt                DateTime?
+  dependant            Dependant? @relation(fields: [forDependantId], references: [id])
+  user                 Users?     @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+}
+
+model Facility {
+  id               Int           @id @default(autoincrement())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  facPhoneNumber   String        @unique @db.VarChar(12)
+  facAddress       String        @db.VarChar(2048)
+  facPincode       String        @db.VarChar(10)
+  facSpeciality    String[]      @default(["general"])
+  facType          String
+  isActive         Boolean       @default(true)
+  facPrimaryName   String        @db.VarChar(2048)
+  facSecondaryName String?       @db.VarChar(2048)
+  updatedBy        String
+  dashboardUser    DashboardUser @relation(fields: [updatedBy], references: [emailId])
+}
+
+model DashboardUser {
+  id               Int             @id @default(autoincrement())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  fullName         String          @db.VarChar(280)
+  emailId          String          @unique
+  role             Role
+  refreshToken     String?         @default("")
+  currentSessionId String?         @unique
+  position         String
+  advertisement    Advertisement[]
+  facility         Facility[]
+  userMessage      UserMessage[]
+  video            Video[]
+  vitalModule      VitalModule[]
+}
+
+model Video {
+  id            Int           @id @default(autoincrement())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  vidSourceUrl  String
+  isActive      Boolean       @default(true)
+  isSubscribed  Boolean       @default(false)
+  priority      Int           @default(0)
+  updatedBy     String
+  vidThumbnail  String
+  vidName       String        @db.VarChar(2048)
+  vidTags       String[]
+  dashboardUser DashboardUser @relation(fields: [updatedBy], references: [emailId])
+}
+
+model Advertisement {
+  id              Int               @id @default(autoincrement())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  isActive        Boolean           @default(true)
+  advName         String            @db.VarChar(2048)
+  advRedirectLink String?
+  advSourceUrl    String
+  isSubscribed    Boolean           @default(false)
+  priority        Int               @default(0)
+  updatedBy       String
+  advPosition     AdvertisePosition @default(top)
+  advType         AdvertiseType     @default(promotion)
+  dashboardUser   DashboardUser     @relation(fields: [updatedBy], references: [emailId])
+}
+
+model VitalModule {
+  id                 Int              @id @default(autoincrement())
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  vitalName          String           @unique
+  vitalCode          String           @unique
+  vitalDataStructure Json[]
+  filters            Json[]
+  updatedBy          String
+  dashboardUser      DashboardUser    @relation(fields: [updatedBy], references: [emailId])
+  VitalsUserData     VitalsUserData[]
+}
+
+model VitalsUserData {
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  vitalRecordData Json
+  createdBy       String      @default("self")
+  recordedOn      DateTime    @default(now())
+  vitalCodeId     String
+  forDependantId  String?
+  forUserId       String?
+  dependant       Dependant?  @relation(fields: [forDependantId], references: [id])
+  user            Users?      @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+  VitalModule     VitalModule @relation(fields: [vitalCodeId], references: [vitalCode])
+}
+
+model UserMessage {
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  complaintId   BigInt?
+  emailId       String?
+  message       String
+  reply         String?
+  replyBy       String?
+  messageType   MessageType
+  userId        String?
+  isReplied     Boolean        @default(false)
+  dashboardUser DashboardUser? @relation(fields: [replyBy], references: [emailId])
+  user          Users?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BlockReasons {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String?
+  blockReason String
+  blockedBy   String   @default("auto-block")
+  user        Users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DeleteAccountReasons {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reason    String
+  deletedby String
+  role      String
+}
+
+model DashboardUserOtpStore {
+  id        Int      @id @default(autoincrement())
+  hashedOTP String
+  emailId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  fullName  String   @db.VarChar(280)
+  position  String
+  role      Role
+}
+
+enum MessageType {
+  complaint
+  feedback
+}
+
+enum Role {
+  AUDITOR
+  ADMIN
+  SUPERADMIN
+}
+
+enum LinkType {
+  minor
+  subaccount
+  existing
+}
+
+enum AccessType {
+  view
+  manage
+}
+
+enum verifiedContactId {
+  phoneNumber
+  emailId
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum Changes {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum AdvertiseType {
+  promotion
+  feature
+}
+
+enum AdvertisePosition {
+  top
+  bottom
+}
