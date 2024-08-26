@@ -1,6 +1,6 @@
 # !/bin/bash
 
 # navigate to app folder
-cd /root/nodjes/dist
+cd /root/nodejs/dist
 pm2 start src/index.js
 
