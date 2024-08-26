@@ -1,28 +1,82 @@
+
 version: 0.2
 
 phases:
   install:
     runtime-versions:
-      nodejs: 20
-   
+      nodejs: 14
     commands:
-        # install npm
-        - npm install
-       
+      - npm install
+
   build:
     commands:
-        # run build script
-        - npm run build
-     
+      - npm run build
+
 artifacts:
-  # include all files required to run application
-  # notably excluded is node_modules, as this will cause overwrite error on deploy
   files:
-      - dist/**/*
-    # - config/**/*
-    # - prisma/**/*
-    # # - .env/**/*
-    # - src/**/*
-    # - package.json
-    # - appspec.yml
-    # - scripts/**/*
+    - '**/*'
+  base-directory: dist # The directory where your build output is located
+  discard-paths: yes
+  name: "build-${CODEBUILD_BUILD_ID}" # Name of the artifact file or directory in S3
+  # Note: If using a S3 path directly, you'll need to use a different approach
+
+cache:
+  paths:
+    - 'node_modules/**/*'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# version: 0.2
+
+# phases:
+#   install:
+#     runtime-versions:
+#       nodejs: 20
+   
+#     commands:
+#         # install npm
+#         - npm install
+       
+#   build:
+#     commands:
+#         # run build script
+#         - npm run build
+     
+# artifacts:
+#   # include all files required to run application
+#   # notably excluded is node_modules, as this will cause overwrite error on deploy
+#   files:
+#       - dist/**/*
+#     # - config/**/*
+#     # - prisma/**/*
+#     # # - .env/**/*
+#     # - src/**/*
+#     # - package.json
+#     # - appspec.yml
+#     # - scripts/**/*
