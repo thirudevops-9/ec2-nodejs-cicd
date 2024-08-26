@@ -6,14 +6,14 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/app
+    destination: /root/nodejs
     overwrite: true
 
 permissions:
   - object: /
     pattern: "**"
-    owner: ubuntu
-    group: ubuntu
+    owner: root
+    group: root
 
 hooks:
 

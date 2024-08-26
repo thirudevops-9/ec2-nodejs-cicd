@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # navigate to app folder
-cd /home/ubuntu/app
+cd /root/nodejs
 
 # install dependencies
 
-npx prisma generate
-npx prisma migrate dev
+# npx prisma generate
+# npx prisma migrate dev
 npm install
 
 # npm run build
