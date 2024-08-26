@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # navigate to app folder
-cd /root/nodejs
+cd /root/nodejs/dist
 unzip dist
 # install dependencies
 
