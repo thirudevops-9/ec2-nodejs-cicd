@@ -1,57 +1,3 @@
-
-version: 0.2
-
-phases:
-  install:
-    runtime-versions:
-      nodejs: 20
-    commands:
-      - npm install
-
-  build:
-    commands:
-      - npm run build
-
-artifacts:
-  files:
-    - '**/*'
-  base-directory: dist # The directory where your build output is located
-  discard-paths: yes
-  name: "build-${CODEBUILD_BUILD_ID}" # Name of the artifact file or directory in S3
-  # Note: If using a S3 path directly, you'll need to use a different approach
-
-cache:
-  paths:
-    - 'node_modules/**/*'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # version: 0.2
 
 # phases:
@@ -80,3 +26,30 @@ cache:
 #     # - package.json
 #     # - appspec.yml
 #     # - scripts/**/*
+
+
+
+#=====================================
+#with build number: 
+
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - npm install
+
+  build:
+    commands:
+      - npm run build
+
+  post_build:
+    commands:
+      - echo "Uploading artifacts to S3..."
+      - aws s3 cp dist s3://nodejs-app-demo/builds/${CODEBUILD_BUILD_ID}/ --recursive
+
+artifacts:
+  files:
+    - dist/**/*
