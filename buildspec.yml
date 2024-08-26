@@ -11,12 +11,6 @@ phases:
     commands:
       - npm run build
   
-  post_build:
-    commands:
-      - echo "Uploading artifacts to S3..."
-      - TIMESTAMP=$(date +%Y%m%d%H%M%S)
-      
-
 artifacts:
   files:
     - dist/**/*
