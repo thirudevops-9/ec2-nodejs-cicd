@@ -2,7 +2,7 @@
 
 # navigate to app folder
 cd /root/nodejs
-unzip dist
+
 # install dependencies
 
 # npx prisma generate
