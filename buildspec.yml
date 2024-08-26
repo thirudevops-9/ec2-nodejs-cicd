@@ -9,15 +9,15 @@ phases:
   build:
     commands:
       - npm run build # If you have a build step
-      - zip -r build_$(date +%Y%m%d%H%M%S).zip .
+      - zip -r dist_$(date +%Y%m%d%H%M%S).zip .
 
   post_build:
     commands:
-      - aws s3 cp build_*.zip s3://nodejs-app-demo/
+      - aws s3 cp dist_*.zip s3://nodejs-app-demo/
 
 artifacts:
   files:
-    - build_*.zip
+    - dist_*.zip
 
 
 
