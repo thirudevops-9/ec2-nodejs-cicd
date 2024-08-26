@@ -15,7 +15,7 @@ phases:
     commands:
       - echo "Uploading artifacts to S3..."
       - TIMESTAMP=$(date +%Y%m%d%H%M%S)
-      - aws s3 cp dist s3://nodejs-app-demo/builds/${CODEBUILD_BUILD_ID}/${TIMESTAMP}/ --recursive
+      
 
 artifacts:
   files:
