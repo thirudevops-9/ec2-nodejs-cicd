@@ -1,55 +1,55 @@
-# version: 0.2
-
-# phases:
-#   install:
-#     runtime-versions:
-#       nodejs: 20
-   
-#     commands:
-#         # install npm
-#         - npm install
-       
-#   build:
-#     commands:
-#         # run build script
-#         - npm run build
-     
-# artifacts:
-#   # include all files required to run application
-#   # notably excluded is node_modules, as this will cause overwrite error on deploy
-#   files:
-#       - dist/**/*
-#     # - config/**/*
-#     # - prisma/**/*
-#     # # - .env/**/*
-#     # - src/**/*
-#     # - package.json
-#     # - appspec.yml
-#     # - scripts/**/*
-
-
-
-#=====================================
-#with build number: 
-
 version: 0.2
 
 phases:
   install:
     runtime-versions:
       nodejs: 20
+   
     commands:
-      - npm install
-
+        # install npm
+        - npm install
+       
   build:
     commands:
-      - npm run build
-
-  post_build:
-    commands:
-      - echo "Uploading artifacts to S3..."
-      - aws s3 cp dist s3://nodejs-app-demo/builds/${CODEBUILD_BUILD_ID}/ --recursive
-
+        # run build script
+        - npm run build
+     
 artifacts:
+  # include all files required to run application
+  # notably excluded is node_modules, as this will cause overwrite error on deploy
   files:
-    - dist/**/*
+      - dist/**/*
+    # - config/**/*
+    # - prisma/**/*
+    # # - .env/**/*
+    # - src/**/*
+    # - package.json
+    # - appspec.yml
+    # - scripts/**/*
+
+
+
+#=====================================
+#with build number: 
+
+# version: 0.2
+
+# phases:
+#   install:
+#     runtime-versions:
+#       nodejs: 20
+#     commands:
+#       - npm install
+
+#   build:
+#     commands:
+#       - npm run build
+
+#   post_build:
+#     commands:
+#       - echo "Uploading artifacts to S3..."
+#       - aws s3 cp dist s3://nodejs-app-demo/builds/${CODEBUILD_BUILD_ID}/ --recursive
+
+# artifacts:
+#   files:
+#     - dist/**/*
